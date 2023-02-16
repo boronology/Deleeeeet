@@ -1,0 +1,19 @@
+﻿<Window x:Class="Deleeeeet.View.AuthWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Deleeeeet.View"
+        mc:Ignorable="d"
+        Title="認証画面" Height="200" Width="600">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" IsReadOnly="True" Text="{Binding Path=AuthUrl, Mode=OneWay}" />
+        <TextBox Grid.Row="1" x:Name="PinCodeTextBox" Text="{Binding Path=PinCode, UpdateSourceTrigger=PropertyChanged}" />
+        <Button Grid.Row="2" x:Name="OkButton" Command="{Binding OkCommand}" >OK</Button>
+    </Grid>
+</Window>

@@ -1,0 +1,94 @@
+﻿<Window x:Class="Deleeeeet.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Deleeeeet.View"
+        mc:Ignorable="d"
+        Title="Deleeeeet" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+
+        <DataGrid Grid.Row="0" ItemsSource="{Binding Path=Tweets}" AutoGenerateColumns="False">
+            <DataGrid.Resources>
+                <local:BindingProxy x:Key="BindingProxy" Data="{Binding}"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn >
+                    <DataGridTemplateColumn.Header>
+                        <CheckBox 
+                            IsChecked="{Binding Path=Data.IsAllChecked, 
+                                        Source={StaticResource BindingProxy},
+                                        UpdateSourceTrigger=PropertyChanged}"
+                            >削除対象</CheckBox>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=IsSelected, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="投稿日" Binding="{Binding Path=CreatedAt, StringFormat={}{0:yyyy/MM/dd HH:mm:ss}}" />
+                <DataGridTextColumn Header="内容" Width="*" Binding="{Binding Path=FullText}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <GroupBox Header="除外設定">
+                <StackPanel>
+                    <CheckBox IsChecked="{Binding Path=IsOmitRetweetChecked, UpdateSourceTrigger=PropertyChanged}">リツイートを削除対象から外す</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=IsOmitReplyChecked, UpdateSourceTrigger=PropertyChanged}">リプライを削除対象から外す</CheckBox>
+                    <CheckBox IsChecked="{Binding Path=IsOmitMediaChecked, UpdateSourceTrigger=PropertyChanged}">メディア付きを削除対象から外す</CheckBox>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox>
+                <GroupBox.Header>
+                    <CheckBox IsChecked="{Binding Path=IsDateFilterChecked, UpdateSourceTrigger=PropertyChanged}">日付で絞り込む</CheckBox>
+                </GroupBox.Header>
+                <StackPanel IsEnabled="{Binding Path=IsDateFilterChecked}">
+                    <CheckBox IsChecked="{Binding Path=IsUseOlderTimelimitChecked, UpdateSourceTrigger=PropertyChanged}">指定した日以降を対象にする</CheckBox>
+                    <DatePicker SelectedDate="{Binding Path=OlderTimelimit}" IsEnabled="{Binding Path=IsUseOlderTimelimitChecked}"/>
+                    <CheckBox IsChecked="{Binding Path=IsUseNewerTimelimitChecked, UpdateSourceTrigger=PropertyChanged}">指定した日以前のみを対象にする</CheckBox>
+                    <DatePicker SelectedDate="{Binding Path=NewerTimelimit}" IsEnabled="{Binding Path=IsUseNewerTimelimitChecked}"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="件数">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0">総件数</TextBlock>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Path=TotalCount}"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" >条件適合</TextBlock>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=FilteredCount}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" >チェックあり</TextBlock>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=CheckedCount}"/>
+                    
+                    <TextBlock Grid.Row="3" Grid.Column="0" >削除対象</TextBlock>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Path=ToDeleteCount}"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+
+        <Button Grid.Row="1" Grid.Column="0"
+                Command="{Binding Path=LoadCommand}">tweet.js読み込み</Button>
+        <Button Grid.Row="1" Grid.Column="1" Command="{Binding Path=DeleteCommand}" >実行</Button>
+    </Grid>
+</Window>

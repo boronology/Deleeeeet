@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE;LOCALBUILD</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants)TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(Configuration)'=='Debug'">
+    <EmbeddedResource Include="SecretKey.secret.json" />
+  </ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Release'">
+		<EmbeddedResource Include="SecretKey.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+    <PackageReference Include="CoreTweet" Version="1.0.0.483" />
+  </ItemGroup>
+
+</Project>

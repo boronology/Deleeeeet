@@ -39,6 +39,9 @@ namespace Deleeeeet.Model.Data
             this.IsRetweet = isRetweet;
             this.CreatedAt = createdAt;
         }
+
+        public Tweet(Schema.Tweet tweet) : this(tweet.Id, tweet.FullText, tweet.IsReply, tweet.HasMedia, tweet.IsRetweet, tweet.CreatedAt)
+        { }
     }
 }
 

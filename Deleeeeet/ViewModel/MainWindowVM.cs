@@ -197,9 +197,11 @@ namespace Deleeeeet.ViewModel
             });
             LoadCommand = new DelegateCommand(async (obj) =>
             {
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.Filter = "tweet.js|*.js";
-                ofd.Multiselect = false;
+                OpenFileDialog ofd = new OpenFileDialog
+                {
+                    Filter = "twitter archive|*.js;*.zip",
+                    Multiselect = false
+                };
                 var result = ofd.ShowDialog();
                 if (result != true || ofd.FileName == null)
                 {
@@ -217,8 +219,17 @@ namespace Deleeeeet.ViewModel
             _model.OnQueryUseSavedToken += _model_OnQueryUseSavedToken;
 
             _model.OnLoadTweetJsStarted += _model_OnLoadTweetJsStarted;
+            _model.OnVerifyTweetJsFailed += _model_OnVerifyTweetJsFailed;
             _model.OnLoadTweetJsFailed += _model_OnLoadTweetJsFailed;
             _model.OnTweetJsLoaded += _model_OnTweetJsLoaded;
+        }
+
+        private void _model_OnVerifyTweetJsFailed()
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                MessageBox.Show("ファイルの形式が正しくありません");
+            });
         }
 
         public async void Win_Loaded(object sender, RoutedEventArgs e)
@@ -226,9 +237,12 @@ namespace Deleeeeet.ViewModel
             await _model.Authorize();
         }
 
-        private void _model_OnLoadTweetJsFailed(string obj)
+        private void _model_OnLoadTweetJsFailed()
         {
-            MessageBox.Show(obj);
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                MessageBox.Show("読み込みに失敗しました。おそらくファイルが破損しています。再度アーカイブをダウンロードして試してみてください。");
+            });
         }
 
         private void _model_OnQueryUseSavedToken(Model.Event.QueryUseSavedTokenEventArgs eventArgs)
@@ -260,7 +274,10 @@ namespace Deleeeeet.ViewModel
 
         private void _model_OnAuthorized()
         {
-            System.Windows.MessageBox.Show("認証成功!");
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                System.Windows.MessageBox.Show("認証成功!");
+            });
         }
 
         private void _model_OnFailAuthorize(string obj)

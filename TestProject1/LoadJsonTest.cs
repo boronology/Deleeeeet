@@ -14,8 +14,8 @@ namespace TestProject1
             string path = System.IO.Path.GetFullPath(@"..\..\..\testdata\testdata.js");
             Assert.True(File.Exists(path));
 
-            var model = new Deleeeeet.Model.JsonDecoder();
-            var data = model.LoadFromFile(path);
+            var model = new Deleeeeet.Model.JsonLoader();
+            var data = model.LoadTweets(path);
             Assert.NotNull(data);
             Assert.Equal(3, data.Length);
             Assert.Equal(1582692792211382272L, data[0].Id);

@@ -13,6 +13,15 @@ namespace Deleeeeet.Model
     {
         private TwitterApi? twitterApi;
 
+
+        private readonly JsonLoader _jsonLoader;
+        private readonly ZipLoader _zipLoader;
+        public ActionModel()
+        {
+            _jsonLoader = new JsonLoader();
+            _zipLoader = new ZipLoader(_jsonLoader);
+        }
+
         #region Authorization
         public event Action? OnUnAuthorized;
         public event Action<Uri, RequirePinCodeEventArgs>? OnGetAuthUri;
@@ -132,24 +141,31 @@ namespace Deleeeeet.Model
 
         #region Load
         public event Action? OnLoadTweetJsStarted;
-        public event Action<string>? OnLoadTweetJsFailed;
+        public event Action? OnVerifyTweetJsFailed;
+        public event Action? OnLoadTweetJsFailed;
         public event Action<ITweet[]>? OnTweetJsLoaded;
         public async Task LoadTweetJs(string filePath)
         {
             await Task.Run(() =>
             {
+                ILoader loader = Path.GetExtension(filePath).ToUpper() == ".JS" ? _jsonLoader : _zipLoader;
                 OnLoadTweetJsStarted?.Invoke();
-                var decoder = new JsonDecoder();
-                var tweets = decoder.LoadFromFile(filePath);
-                if (tweets == null)
+
+                if (!loader.VerifyFormat(filePath))
                 {
-                    OnLoadTweetJsFailed?.Invoke("tweets is null. maybe file is invalid");
+                    OnVerifyTweetJsFailed?.Invoke();
                     return;
                 }
-
-                OnTweetJsLoaded?.Invoke(tweets.Select(x => new Data.Tweet(x.Id, x.FullText, x.IsReply, x.HasMedia, x.IsRetweet, x.CreatedAt)).ToArray());
-
-
+                try
+                {
+                    var tweets = loader.LoadTweets(filePath);
+                    OnTweetJsLoaded?.Invoke(tweets.Select(x => new Data.Tweet(x)).ToArray());
+                }
+                catch (Exception ex)
+                {
+                    OnLoadTweetJsFailed?.Invoke();
+                    return;
+                }
             });
         }
 
